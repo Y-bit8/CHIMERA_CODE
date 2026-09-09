@@ -1,0 +1,75 @@
+name: dataB_regression
+task_type: regression
+task_module: chimera.tasks.dataB_regression
+seed: 42
+device: auto
+output_dir: output/dataB_regression
+data:
+  data_dir: data/dataB
+  reaction_file: Ir-Ni reaction.xlsx
+  target_column: ddG
+  ee_column: ee
+  ee_threshold: 90.0
+  use_absolute_ee: true
+  drop_zero_ddg: true
+  fingerprint_smiles_cols:
+  - ligand
+  - product
+  fingerprint_bits: 1024
+  boundary_column: tem
+  temperature_column: tem
+  time_column: Time
+  metal_column: metal
+  solvent_column: solvent
+  additive_column: additive
+  gm_column: gm
+  elsi_column: elsi
+model:
+  hidden: 32
+  gin_layers: 5
+  gat_layers: 2
+  num_patterns: 10
+  chirality_alpha: 2.0
+  fusion_gate: residual_sigmoid
+  gate_hidden: 128
+  fusion_norm: layernorm
+  head_hidden1: 1024
+  head_hidden2: 256
+  head_dropout: 0.1
+split:
+  mode: kfold
+  num_folds: 10
+  inner_strategy: rotating_outer_fold
+training:
+  epochs: 200
+  batch_size: 128
+  lr: 0.001
+  lr_factor: 0.1
+  lr_patience: 10
+  min_lr: 1.0e-07
+  weight_decay: 0.0001
+  monitor: rmse
+  monitor_maximize: false
+  selection_source: validation
+  regression_loss: mse
+  pad_train_to_full_batch: false
+ablation:
+  no_fingerprint: false
+  no_graph: false
+  no_motif: false
+  no_interaction: false
+  no_loffi: false
+  no_condition: false
+experiment:
+  family: unified_final_v2
+  task: dataB_regression
+  scheme: residual_sigmoid_layernorm_balanced_v2
+  full_outer_folds: 10
+  shared_across_all_tasks: true
+  fusion_gate: residual_sigmoid
+  gate_hidden: 128
+  fusion_norm: layernorm
+  head_hidden1: 1024
+  head_hidden2: 256
+  head_dropout: 0.1
+  weight_decay: 0.0001

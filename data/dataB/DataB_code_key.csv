@@ -1,0 +1,154 @@
+﻿coded_column,meaning,code,original_value,count
+metal,Metal source,0,Ni(COD)2,46
+metal,Metal source,1,Ni(acac)2,1
+metal,Metal source,2,Ni(cod)2,1
+metal,Metal source,3,NiBr2·DME,60
+metal,Metal source,4,NiBr2·glyme,301
+metal,Metal source,5,NiCl2,1
+metal,Metal source,6,NiCl2`glyme+NaBr2,2
+metal,Metal source,7,NiCl2·DME,319
+metal,Metal source,8,NiCl2·glyme,154
+metal,Metal source,9,Nil2,1
+solvent,Solvent,0,2-MeTHF,59
+solvent,Solvent,1,ACN,1
+solvent,Solvent,2,Benzene,73
+solvent,Solvent,3,Benzene+DMDC,1
+solvent,Solvent,4,Benzene+H2O,1
+solvent,Solvent,5,Benzonitrile,2
+solvent,Solvent,6,CH2Cl2,1
+solvent,Solvent,7,CH3CN,2
+solvent,Solvent,9,CPME,3
+solvent,Solvent,10,DCE,1
+solvent,Solvent,12,DMA,3
+solvent,Solvent,13,DMBP,1
+solvent,Solvent,14,DME,17
+solvent,Solvent,15,DME+DMA,1
+solvent,Solvent,16,DME+H2O,1
+solvent,Solvent,17,DME+HFIP,1
+solvent,Solvent,18,DME+MeOH,1
+solvent,Solvent,20,DME+TFE,1
+solvent,Solvent,21,DME+Toluene,1
+solvent,Solvent,22,DME+iPrOH,1
+solvent,Solvent,23,DME+tBuOH,1
+solvent,Solvent,24,DMF,7
+solvent,Solvent,25,DMSO,2
+solvent,Solvent,26,EA,16
+solvent,Solvent,27,EA+DMDC,1
+solvent,Solvent,28,EA+DMDC+NH4Cl,1
+solvent,Solvent,29,Et2O,1
+solvent,Solvent,30,Et2O+THF,1
+solvent,Solvent,31,EtOAc,81
+solvent,Solvent,32,EtOAc+Benzene,1
+solvent,Solvent,33,EtOAc+H2O,1
+solvent,Solvent,34,IPrOAc+Boc2O,1
+solvent,Solvent,35,IPrOAc+Boc2O+NH4Cl,1
+solvent,Solvent,36,IPrOAc+DMDC,75
+solvent,Solvent,37,IPrOAc+DMDC+H2O,1
+solvent,Solvent,38,IPrOAc+DMDC+NH4Cl,46
+solvent,Solvent,39,IPrOAc+DMDC+NH4Cl+H2O,1
+solvent,Solvent,40,IPrOAc+DMDC+NH4Cl+N-pentylbenzamide,1
+solvent,Solvent,41,IPrOAc+DMDC+NH4Cl+TEMPO,1
+solvent,Solvent,42,MTBE,3
+solvent,Solvent,43,MeOAc,51
+solvent,Solvent,44,MeOAc+DMA,1
+solvent,Solvent,45,PhCF3,2
+solvent,Solvent,46,PhCH3,1
+solvent,Solvent,48,Propylene carbonate,2
+solvent,Solvent,49,THF,63
+solvent,Solvent,50,THF+EtOAc,2
+solvent,Solvent,51,THF+PhCF3,4
+solvent,Solvent,52,Toluene,1
+solvent,Solvent,53,acetone,47
+solvent,Solvent,54,acetone+H2O,1
+solvent,Solvent,55,acetone+HFIP,1
+solvent,Solvent,56,acetone+MeOH,1
+solvent,Solvent,57,acetone+TFE,1
+solvent,Solvent,58,dioxane,91
+solvent,Solvent,59,dioxane+DMA,59
+solvent,Solvent,60,dioxane+DMBP,68
+solvent,Solvent,61,dioxane+DMDC,1
+solvent,Solvent,62,dioxane+DMDC+NH4Cl,1
+solvent,Solvent,63,iPrOAc,72
+solvent,Solvent,64,iProAc,1
+additive,Additive/base,2,"2,6-lutidune+OC(C)C1=CC=CC=C1",1
+additive,Additive/base,3,Aceclidine,2
+additive,Additive/base,4,BTMG,2
+additive,Additive/base,5,BnBF3K,42
+additive,Additive/base,6,"BnBF3K+2,6-lutidine",1
+additive,Additive/base,7,BnBF3K+Li2CO3,1
+additive,Additive/base,8,BnBF3K+Li3PO4,1
+additive,Additive/base,10,Cs2CO3,79
+additive,Additive/base,11,Cs2CO3+HEH,59
+additive,Additive/base,12,CsOH`H2O,1
+additive,Additive/base,14,DBN,1
+additive,Additive/base,15,DBU,3
+additive,Additive/base,16,"DMDC+2,6-lutidine",55
+additive,Additive/base,17,"DMDC+2,6-lutidine+NH4Cl",17
+additive,Additive/base,18,DMDC+K2CO3+NH4Cl,1
+additive,Additive/base,19,DMDC+K2HPO4+NH4Cl,1
+additive,Additive/base,22,DMDC+Na2CO3+NH4Cl,1
+additive,Additive/base,23,DMDC+Na2HPO4+NH4Cl,1
+additive,Additive/base,24,DMDC+Na3PO4+NH4Cl,1
+additive,Additive/base,25,DMDC+NaHCO3,1
+additive,Additive/base,26,DMDC+NaHCO3+NH4Cl,1
+additive,Additive/base,27,Et3N+HEH,1
+additive,Additive/base,28,EtOAc,1
+additive,Additive/base,29,K2CO3,71
+additive,Additive/base,30,K2CO3+HEH,1
+additive,Additive/base,31,K2CO3+OC(C)C1=CC=CC=C1,1
+additive,Additive/base,32,K2HPO4,141
+additive,Additive/base,33,K2HPO4+A1,1
+additive,Additive/base,34,K2HPO4+A2,1
+additive,Additive/base,35,K2HPO4+C1(/C=C/C2=CC=CC=C2)=CC=CC=C1,20
+additive,Additive/base,36,K2HPO4+COC(C=C1)=CC=C1/C=C/C2=CC=CC=C2,14
+additive,Additive/base,37,K2HPO4+OC(C)C1=CC=CC=C1,1
+additive,Additive/base,38,K3PO4,4
+additive,Additive/base,39,K3PO4+OC(C)C1=CC=CC=C1,1
+additive,Additive/base,40,KHCO3,1
+additive,Additive/base,41,KHCO3+OC(C)C1=CC=CC=C1,1
+additive,Additive/base,43,MeTBD,2
+additive,Additive/base,45,Na2CO3,57
+additive,Additive/base,46,Na2CO3+CC(C)O,1
+additive,Additive/base,47,Na2CO3+HEH,1
+additive,Additive/base,48,Na2CO3+OC(C)C1=CC=C(C(F)(F)F)C=C1,1
+additive,Additive/base,49,Na2CO3+OC(C)C1=CC=CC=C1,58
+additive,Additive/base,50,Na2CO3+OC(C)C1=CC=CC=C1+H2O,1
+additive,Additive/base,51,Na2CO3+OC(C)C1=CC=CC=C1+NaBr,3
+additive,Additive/base,52,Na2CO3+OC(C)C1=CC=CC=C1+PhBr,1
+additive,Additive/base,53,Na2CO3+OC(C)COC1=CC=C(CC#N)C=C1,1
+additive,Additive/base,54,Na2HPO4,52
+additive,Additive/base,55,Na2HPO4+NH4Cl,78
+additive,Additive/base,56,Na2HPO4+OC(C)C1=CC=CC=C1,1
+additive,Additive/base,57,Na3PO4,84
+additive,Additive/base,58,Na3PO4+OC(C)C1=CC=CC=C1,1
+additive,Additive/base,59,NaHCO3,3
+additive,Additive/base,60,NaHCO3+OC(C)C1=CC=CC=C1,1
+additive,Additive/base,61,Phosphaz P1-tBu t(tm),2
+additive,Additive/base,62,TBAOH 30 H2O,2
+additive,Additive/base,63,TMG,2
+additive,Additive/base,65,lutidine,1
+additive,Additive/base,66,quinuclidine,1
+gm,Photocatalyst,0,4CzIPN,187
+gm,Photocatalyst,1,COC1=CC=C(C(=O)C2=CC=C(C#N)C=C2)C=C1,1
+gm,Photocatalyst,2,COC1=CC=C(C(=O)C2=CC=C(C(F)(F)F)C=C2)C=C1,17
+gm,Photocatalyst,3,COC1=CC=C(C(=O)C2=CC=C(C(F)(F)F)C=C2)C=C1,1
+gm,Photocatalyst,4,COC1=CC=C(C(=O)C2=CC=C(C(F)(F)F)C=C2)C=C1,1
+gm,Photocatalyst,5,COC1=CC=C(C(=O)C2=CC=C(C(F)(F)F)C=C2)C=C1,1
+gm,Photocatalyst,6,COC1=CC=C(C(=O)C2=CC=C(C(F)(F)F)C=C2)C=C1,21
+gm,Photocatalyst,7,COC1=CC=C(C=C1)C(C2=CC=C(C=C2)[N+]([O-])=O)=O,5
+gm,Photocatalyst,9,Ir(dFCF3ppy)2dtbbpy]Cl,135
+gm,Photocatalyst,10,Ir(dFCF3ppy)2dtbbpy]PF6,451
+gm,Photocatalyst,11,Ir(dFMeppy)2dtbbpy]Cl,1
+gm,Photocatalyst,12,Ir(ppy)2dtbbpy]Cl,1
+gm,Photocatalyst,14,Ir[dF(CF3)ppy]2(bpy)PF6,63
+gm,Photocatalyst,16,Ru(bpy)3Cl2 6H2O,1
+elsi,Irradiation/other information,0,30W  450nm blue LED,62
+elsi,Irradiation/other information,1,34W Blue LEDS,45
+elsi,Irradiation/other information,2,390nm 10W,26
+elsi,Irradiation/other information,16,390nm 24W,21
+elsi,Irradiation/other information,17,40W 427nm Blue LED,327
+elsi,Irradiation/other information,18,40W 427nm Kessil lamp,79
+elsi,Irradiation/other information,19,450nm,27
+elsi,Irradiation/other information,20,470nm,35
+elsi,Irradiation/other information,21,8W Blue LEDS,115
+elsi,Irradiation/other information,22,Blue LEDS,149
