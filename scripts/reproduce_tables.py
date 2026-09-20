@@ -5,13 +5,14 @@ The script does not load datasets, configurations, checkpoints, or predictions.
 Every input is a ``fold_metrics.csv`` under ``results/`` and must contain exactly
 the ten outer-test folds numbered 1 through 10. Reported standard deviations use
 the sample definition (pandas ``std(ddof=1)``), matching the manuscript.
+
+Table 6 is intentionally descriptive: it reports only the mean paired fold-level
+difference and does not calculate confidence intervals or hypothesis tests.
 """
 
 from __future__ import annotations
 
 import argparse
-import itertools
-import math
 from pathlib import Path
 
 import numpy as np
@@ -46,6 +47,7 @@ ABLATIONS = (
     ("no_fingerprint", "w/o Fingerprint"),
     ("no_graph", "w/o Atom-level Graph"),
 )
+DATA_B_NO_AUX328 = "DataB_CHIMERA_NoAux328_ConditionsKept"
 METRICS = {
     "classification": ("recall_macro", "f1_macro", "auc"),
     "regression": ("r2", "rmse"),
@@ -57,10 +59,6 @@ DISPLAY = {
     "r2": "R2",
     "rmse": "RMSE",
 }
-
-# Student-t 97.5th percentile with df=9. All input files are fixed at ten folds.
-T_CRITICAL_DF9 = 2.2621571628540993
-
 
 def load_folds(path: Path, task: str) -> pd.DataFrame:
     if not path.is_file():
@@ -94,47 +92,6 @@ def paired_paths(results: Path, dataset: str, task: str) -> tuple[Path, Path]:
     )
 
 
-def average_ranks(values: np.ndarray) -> np.ndarray:
-    order = np.argsort(values, kind="mergesort")
-    ranks = np.empty(len(values), dtype=float)
-    start = 0
-    while start < len(values):
-        stop = start + 1
-        while stop < len(values) and values[order[stop]] == values[order[start]]:
-            stop += 1
-        ranks[order[start:stop]] = (start + 1 + stop) / 2.0
-        start = stop
-    return ranks
-
-
-def exact_wilcoxon_two_sided(differences: np.ndarray) -> float:
-    differences = differences[~np.isclose(differences, 0.0)]
-    if not len(differences):
-        return 1.0
-    ranks = average_ranks(np.abs(differences))
-    observed = float(ranks[differences > 0].sum())
-    center = float(ranks.sum() / 2.0)
-    extreme = 0
-    total = 2 ** len(ranks)
-    for signs in itertools.product((0, 1), repeat=len(ranks)):
-        value = float(ranks[np.asarray(signs, dtype=bool)].sum())
-        if abs(value - center) >= abs(observed - center) - 1e-12:
-            extreme += 1
-    return extreme / total
-
-
-def holm_adjust(p_values: list[float]) -> list[float]:
-    p = np.asarray(p_values, dtype=float)
-    order = np.argsort(p)
-    adjusted = np.empty_like(p)
-    running_max = 0.0
-    for rank, index in enumerate(order):
-        candidate = min(1.0, (len(p) - rank) * p[index])
-        running_max = max(running_max, candidate)
-        adjusted[index] = running_max
-    return adjusted.tolist()
-
-
 def make_table4(results: Path) -> pd.DataFrame:
     rows = []
     for dataset in ("A", "B"):
@@ -162,6 +119,15 @@ def make_table5(results: Path) -> pd.DataFrame:
                 summarize(cls, "recall_macro"), summarize(cls, "f1_macro"), summarize(cls, "auc"),
                 summarize(reg, "r2"), summarize(reg, "rmse"),
             ])
+        if dataset == "B":
+            root = results / DATA_B_NO_AUX328
+            cls = load_folds(root / "dataB_classification/fold_metrics.csv", "classification")
+            reg = load_folds(root / "dataB_regression/fold_metrics.csv", "regression")
+            rows.append([
+                "Data B", "CHIMERA (w/o 328-D descriptors)",
+                summarize(cls, "recall_macro"), summarize(cls, "f1_macro"), summarize(cls, "auc"),
+                summarize(reg, "r2"), summarize(reg, "rmse"),
+            ])
     return pd.DataFrame(rows, columns=["Dataset", "Model", "REC", "F1", "AUC", "R2", "RMSE"])
 
 
@@ -175,7 +141,6 @@ def make_table6(results: Path) -> pd.DataFrame:
         ("B", "regression", "rmse", False),
     )
     records = []
-    p_values = []
     for dataset, task, metric, higher_is_better in comparisons:
         chimera_path, mfp_path = paired_paths(results, dataset, task)
         chimera = load_folds(chimera_path, task)[metric].to_numpy(dtype=float)
@@ -183,25 +148,12 @@ def make_table6(results: Path) -> pd.DataFrame:
         difference = chimera - mfp
         direction = 1.0 if higher_is_better else -1.0
         advantage = direction * difference
-        standard_error = float(difference.std(ddof=1) / math.sqrt(len(difference)))
-        raw_low = float(difference.mean() - T_CRITICAL_DF9 * standard_error)
-        raw_high = float(difference.mean() + T_CRITICAL_DF9 * standard_error)
-        ci_low, ci_high = sorted((direction * raw_low, direction * raw_high))
-        p_value = exact_wilcoxon_two_sided(difference)
-        p_values.append(p_value)
         records.append({
             "Dataset": f"Data {dataset}",
             "Task": task.capitalize(),
             "Metric": DISPLAY[metric],
-            "CHIMERA": f"{chimera.mean():.3f} ± {chimera.std(ddof=1):.3f}",
-            "MFP_MLP": f"{mfp.mean():.3f} ± {mfp.std(ddof=1):.3f}",
-            "CHIMERA advantage (95% paired t CI)": f"{advantage.mean():.3f} [{ci_low:.3f}, {ci_high:.3f}]",
-            "Wins (CHIMERA/MFP_MLP)": f"{int((advantage > 0).sum())}/{int((advantage < 0).sum())}",
-            "Wilcoxon p (two-sided)": f"{p_value:.3f}",
+            "Mean paired difference (CHIMERA advantage)": f"{advantage.mean():.3f}",
         })
-    adjusted = holm_adjust(p_values)
-    for record, value in zip(records, adjusted):
-        record["Holm-adjusted p"] = f"{value:.3f}"
     return pd.DataFrame(records)
 
 
@@ -228,7 +180,10 @@ def main() -> None:
         "--results-root",
         type=Path,
         default=project / "results",
-        help="Results directory containing CHIMERA/COMPONENT_SPLIT/BASELINE/ABLATION",
+        help=(
+            "Results directory containing CHIMERA/COMPONENT_SPLIT/BASELINE/ABLATION/"
+            f"{DATA_B_NO_AUX328}"
+        ),
     )
     parser.add_argument(
         "--output-dir",

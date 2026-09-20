@@ -5,31 +5,29 @@ PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PYTHON_BIN="${PYTHON_BIN:-python}"
 PYTHON_EXE="$(readlink -f "$(command -v "${PYTHON_BIN}")")"
 PYTHON_PREFIX="$(cd "$(dirname "${PYTHON_EXE}")/.." && pwd)"
-GPU_LIST="${GPUS:-0,1,2,3}"
-OUTPUT_ROOT="${PROJECT_ROOT}/output"
+GPU_LIST="${GPUS:-0,1}"
+OUTPUT_ROOT="${PROJECT_ROOT}/output/DataB_ConditionOneHot"
 LOG_ROOT="${OUTPUT_ROOT}/logs"
 DRY_RUN=0
 
 if [[ ${1:-} == "--dry-run" ]]; then
   DRY_RUN=1
 elif [[ $# -ne 0 ]]; then
-  echo "Usage: GPUS=0,1,2,3 bash run.sh [--dry-run]" >&2
+  echo "Usage: GPUS=0,1 bash run_dataB_onehot.sh [--dry-run]" >&2
   exit 2
 fi
 
 IFS=',' read -r -a GPU_IDS <<<"${GPU_LIST}"
-if [[ ${#GPU_IDS[@]} -ne 4 ]]; then
-  echo "Exactly four GPU IDs are required, for example GPUS=0,1,2,3" >&2
+if [[ ${#GPU_IDS[@]} -ne 2 ]]; then
+  echo "Exactly two GPU IDs are required, for example GPUS=0,1" >&2
   exit 2
 fi
 
-TASKS=(dataA_classification dataA_regression dataB_classification dataB_regression)
+TASKS=(dataB_classification dataB_regression)
+CONFIGS=(configs/dataB_classification_onehot.yaml configs/dataB_regression_onehot.yaml)
 mkdir -p "${LOG_ROOT}" "${PROJECT_ROOT}/cache/pycache"
 export PYTHONHASHSEED=42
 export PYTHONPYCACHEPREFIX="${PROJECT_ROOT}/cache/pycache"
-# PyTorch wheels may load the system libstdc++ before RDKit is imported. Put
-# the selected conda environment's runtime libraries first so both packages use
-# the same C++ runtime, independent of their Python import order.
 export LD_LIBRARY_PATH="${PYTHON_PREFIX}/lib${LD_LIBRARY_PATH:+:${LD_LIBRARY_PATH}}"
 export CUBLAS_WORKSPACE_CONFIG=:4096:8
 export OMP_NUM_THREADS="${OMP_NUM_THREADS:-4}"
@@ -39,31 +37,22 @@ cd "${PROJECT_ROOT}"
 "${PYTHON_BIN}" - <<'PY'
 from pathlib import Path
 import yaml
-import torch
-from rdkit import Chem
-import torch_geometric
 
-assert torch.cuda.is_available(), "CUDA is not available in the selected Python environment"
-assert Chem.MolFromSmiles("CCO") is not None
-
-tasks = ("dataA_classification", "dataA_regression", "dataB_classification", "dataB_regression")
-for task in tasks:
-    path = Path("configs") / f"{task}.yaml"
+for path in (Path("configs/dataB_classification_onehot.yaml"), Path("configs/dataB_regression_onehot.yaml")):
     config = yaml.safe_load(path.read_text(encoding="utf-8"))
     assert config["seed"] == 42
     assert config["split"]["num_folds"] == 10
     assert config["training"]["epochs"] == 200
     assert config["training"]["batch_size"] == 128
-    assert config["model"]["chirality_alpha"] == 2.0
-    assert Path(config["data"]["data_dir"]).exists()
-    if task.startswith("dataB_"):
-        assert config["data"]["condition_encoding"] == "scalar_codes"
-        assert "drop_zero_ddg" not in config["data"]
-print("Configuration and dataset checks passed.")
+    assert config["training"]["selection_source"] == "validation"
+    assert config["data"]["condition_encoding"] == "fixed_one_hot"
+    assert "drop_zero_ddg" not in config["data"]
+    assert Path(config["data"]["data_dir"]).is_dir()
+print("One-hot sensitivity configuration checks passed.")
 PY
 
 echo "Task assignment:"
-for index in 0 1 2 3; do
+for index in 0 1; do
   echo "  GPU ${GPU_IDS[$index]}: ${TASKS[$index]}"
 done
 if [[ ${DRY_RUN} -eq 1 ]]; then
@@ -73,10 +62,10 @@ fi
 
 rm -f "${OUTPUT_ROOT}/PIPELINE_COMPLETE" "${OUTPUT_ROOT}/PIPELINE_FAILED"
 pids=()
-for index in 0 1 2 3; do
+for index in 0 1; do
   task="${TASKS[$index]}"
+  config="${CONFIGS[$index]}"
   gpu="${GPU_IDS[$index]}"
-  config="configs/${task}.yaml"
   result_dir="${OUTPUT_ROOT}/${task}"
   log="${LOG_ROOT}/${task}.log"
   (
@@ -96,8 +85,6 @@ for index in 0 1 2 3; do
       echo "FAILED ${task}; see ${log}" >&2
       exit "${status}"
     fi
-    # Checkpoints are required during training and final evaluation, but are not
-    # retained in the reproducibility output.
     "${PYTHON_BIN}" - "${result_dir}" <<'PY'
 from pathlib import Path
 import sys
@@ -112,7 +99,7 @@ PY
 done
 
 failed=0
-for index in 0 1 2 3; do
+for index in 0 1; do
   if ! wait "${pids[$index]}"; then
     failed=1
   fi
@@ -124,6 +111,7 @@ fi
 
 "${PYTHON_BIN}" scripts/collect_results.py \
   --root "${OUTPUT_ROOT}" \
-  --output "${OUTPUT_ROOT}/chimera_summary.csv"
+  --output "${OUTPUT_ROOT}/chimera_onehot_summary.csv" \
+  --datasets DataB
 touch "${OUTPUT_ROOT}/PIPELINE_COMPLETE"
-echo "All tasks complete. Final table: ${OUTPUT_ROOT}/chimera_summary.csv"
+echo "Data B one-hot sensitivity experiments complete."

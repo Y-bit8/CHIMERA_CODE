@@ -10,7 +10,6 @@ data:
   ee_column: ee
   ee_threshold: 90.0
   use_absolute_ee: true
-  drop_zero_ddg: true
   fingerprint_smiles_cols:
   - ligand
   - product
@@ -23,6 +22,7 @@ data:
   additive_column: additive
   gm_column: gm
   elsi_column: elsi
+  condition_encoding: scalar_codes
 model:
   hidden: 32
   gin_layers: 5

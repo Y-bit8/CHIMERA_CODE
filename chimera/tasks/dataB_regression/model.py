@@ -110,6 +110,9 @@ class Transformer(torch.nn.Module):
         self.ablation.setdefault("no_interaction", False)
         self.ablation.setdefault("no_loffi", False)
         self.ablation.setdefault("no_condition", False)
+        self.condition_dim = int(dataset[0][0].condition.numel())
+        if self.condition_dim <= 0:
+            raise ValueError("Data B condition vector must contain at least one feature")
 
         self.conv1 = GIN(dataset[0][0].num_features,hidden,gin_layers,2*hidden,jk='cat')
         self.conv2 = GAT(dataset[0][5].num_features,hidden,gat_layers,2*hidden,jk='cat')
@@ -127,7 +130,7 @@ class Transformer(torch.nn.Module):
                                                                                                                
 
                                       
-        fusion_dim = 2048 + 328 + 16 * hidden + 6 * num_patterns * num_patterns + 7
+        fusion_dim = 2048 + 328 + 16 * hidden + 6 * num_patterns * num_patterns + self.condition_dim
         self.fusion_gate_type = str(model_cfg.get("fusion_gate", "legacy_log_softmax")).lower()
         if self.fusion_gate_type == "legacy_log_softmax":
             self.lin8 = Linear(fusion_dim, fusion_dim)
@@ -154,8 +157,8 @@ class Transformer(torch.nn.Module):
                                  
         
         
-        default_head_hidden1 = (2048+328)//2+16*hidden//2+6*num_patterns*num_patterns//2+7
-        default_head_hidden2 = (2048+328)//4+16*hidden//4+6*num_patterns*num_patterns//4+7
+        default_head_hidden1 = (2048+328)//2+16*hidden//2+6*num_patterns*num_patterns//2+self.condition_dim
+        default_head_hidden2 = (2048+328)//4+16*hidden//4+6*num_patterns*num_patterns//4+self.condition_dim
         head_hidden1 = int(model_cfg.get("head_hidden1", default_head_hidden1))
         head_hidden2 = int(model_cfg.get("head_hidden2", default_head_hidden2))
         if head_hidden1 <= 0 or head_hidden2 <= 0:
@@ -488,7 +491,7 @@ class Transformer(torch.nn.Module):
                                           
         
                                                                                                                                                             
-        cond_embedding=torch.cat((temp_x,time_x,metal_x,solvent_x,additive_x,gm_x,elsi_x),1)
+        cond_embedding = data[0].condition.view(-1, self.condition_dim).float()
         (
             fg_input,
             super_rep_x0, super_rep_x10, super_rep_x20, super_rep_x30,

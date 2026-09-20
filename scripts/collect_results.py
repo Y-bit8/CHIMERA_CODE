@@ -45,10 +45,18 @@ def main() -> None:
     parser = argparse.ArgumentParser(description="Collect the four CHIMERA tasks into one table")
     parser.add_argument("--root", type=Path, default=Path("output"), help="Directory containing four task results")
     parser.add_argument("--output", type=Path, default=Path("output/chimera_summary.csv"))
+    parser.add_argument(
+        "--datasets",
+        nargs="+",
+        choices=tuple(DATASETS),
+        default=list(DATASETS),
+        help="Datasets to collect (default: DataA DataB)",
+    )
     args = parser.parse_args()
 
     rows: list[dict[str, float | int | str]] = []
-    for dataset, (classification_task, regression_task) in DATASETS.items():
+    for dataset in args.datasets:
+        classification_task, regression_task = DATASETS[dataset]
         classification = load_folds(
             args.root, classification_task, ("recall_macro", "f1_macro", "auc")
         )

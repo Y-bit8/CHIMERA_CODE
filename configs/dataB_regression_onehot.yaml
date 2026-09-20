@@ -1,9 +1,9 @@
-name: dataB_regression
+name: dataB_regression_onehot
 task_type: regression
 task_module: chimera.tasks.dataB_regression
 seed: 42
 device: auto
-output_dir: output/dataB_regression
+output_dir: output/DataB_ConditionOneHot/dataB_regression
 data:
   data_dir: data/dataB
   reaction_file: Ir-Ni reaction.xlsx
@@ -23,7 +23,8 @@ data:
   additive_column: additive
   gm_column: gm
   elsi_column: elsi
-  condition_encoding: scalar_codes
+  condition_encoding: fixed_one_hot
+  condition_code_key: DataB_code_key.csv
 model:
   hidden: 32
   gin_layers: 5
@@ -61,11 +62,11 @@ ablation:
   no_loffi: false
   no_condition: false
 experiment:
-  family: unified_final_v2
+  family: condition_encoding_sensitivity
   task: dataB_regression
-  scheme: residual_sigmoid_layernorm_balanced_v2
+  scheme: fixed_one_hot_nominal_conditions
+  comparison_to: scalar_codes
   full_outer_folds: 10
-  shared_across_all_tasks: true
   fusion_gate: residual_sigmoid
   gate_hidden: 128
   fusion_norm: layernorm

@@ -153,7 +153,7 @@ def get_bond_features(bond,
         bond_feature_vector += stereo_type_enc
 
     return np.array(bond_feature_vector)
-def create_pyg(x_smiles, y,temp,time,metal,solvent,additive,gm,elsi,label,add_fea,add_fea1):
+def create_pyg(x_smiles, y,temp,time,metal,solvent,additive,gm,elsi,label,add_fea,add_fea1,condition_features):
 
 
 
@@ -173,7 +173,7 @@ def create_pyg(x_smiles, y,temp,time,metal,solvent,additive,gm,elsi,label,add_fe
 
            
                   
-    for (smiles, y_val,temp_val,time_val,metal_val,solvent_val,additive_val,gm_val,elsi_val,label_val,add_fea_val,add_fea1_val) in zip(x_smiles, y,temp,time,metal,solvent,additive,gm,elsi,label,add_fea,add_fea1):
+    for (smiles, y_val,temp_val,time_val,metal_val,solvent_val,additive_val,gm_val,elsi_val,label_val,add_fea_val,add_fea1_val,condition_val) in zip(x_smiles, y,temp,time,metal,solvent,additive,gm,elsi,label,add_fea,add_fea1,condition_features):
         
                                             
         mol = Chem.MolFromSmiles(smiles,sanitize=False)
@@ -249,6 +249,7 @@ def create_pyg(x_smiles, y,temp,time,metal,solvent,additive,gm,elsi,label,add_fe
                                                                                
         
         add_fea1_tensor = torch.tensor(add_fea1_val, dtype = torch.float)
+        condition_tensor = torch.as_tensor(condition_val, dtype=torch.float32).view(1, -1)
                                                           
                                                                                           
                         
@@ -260,7 +261,7 @@ def create_pyg(x_smiles, y,temp,time,metal,solvent,additive,gm,elsi,label,add_fe
         chirality_tensor = F.pad(chirality_tensor, (0, padding_size), value=0)
                                                                                    
                                                                          
-        data_list.append(Data(x = X, edge_index = E, edge_attr = EF, y = y_tensor,temp=temp_tensor,time=time_tensor,metal=metal_tensor,solvent=solvent_tensor,additive=additive_tensor,gm=gm_tensor,elsi=elsi_tensor, label=label_tensor, add_fea=add_fea_tensor, add_fea1=add_fea1_tensor,chirality_fea=chirality_tensor))
+        data_list.append(Data(x = X, edge_index = E, edge_attr = EF, y = y_tensor,temp=temp_tensor,time=time_tensor,metal=metal_tensor,solvent=solvent_tensor,additive=additive_tensor,gm=gm_tensor,elsi=elsi_tensor, label=label_tensor, add_fea=add_fea_tensor, add_fea1=add_fea1_tensor,condition=condition_tensor,chirality_fea=chirality_tensor))
     
 
     return data_list
@@ -360,7 +361,7 @@ def extract_subsmiles_metal(smiles):
     return submol_smiles
 
 
-def pyg_data_generation(df_data,temp,time,metal,solvent,additive,gm,elsi,label,add_fea,add_fea1):
+def pyg_data_generation(df_data,temp,time,metal,solvent,additive,gm,elsi,label,add_fea,add_fea1,condition_features):
     data_list1=[]
     data_list2=[]
     data_list3=[]
@@ -371,10 +372,10 @@ def pyg_data_generation(df_data,temp,time,metal,solvent,additive,gm,elsi,label,a
     data_listh4=[]
     y_label,y = y_label_cal(df_data)
 
-    data_list1=create_pyg(df_data['ligand'],y_label,temp,time,metal,solvent,additive,gm,elsi,label, add_fea, add_fea1)
-    data_list2=create_pyg(df_data['product'],y_label,temp,time,metal,solvent,additive,gm,elsi,label, add_fea, add_fea1)
-    data_list3=create_pyg(df_data['R1'],y_label,temp,time,metal,solvent,additive,gm,elsi,label, add_fea, add_fea1)
-    data_list4=create_pyg(df_data['R2'],y_label,temp,time,metal,solvent,additive,gm,elsi,label, add_fea, add_fea1)
+    data_list1=create_pyg(df_data['ligand'],y_label,temp,time,metal,solvent,additive,gm,elsi,label, add_fea, add_fea1, condition_features)
+    data_list2=create_pyg(df_data['product'],y_label,temp,time,metal,solvent,additive,gm,elsi,label, add_fea, add_fea1, condition_features)
+    data_list3=create_pyg(df_data['R1'],y_label,temp,time,metal,solvent,additive,gm,elsi,label, add_fea, add_fea1, condition_features)
+    data_list4=create_pyg(df_data['R2'],y_label,temp,time,metal,solvent,additive,gm,elsi,label, add_fea, add_fea1, condition_features)
     data_listh1=create_pyg_himol(df_data['ligand'])
     data_listh2=create_pyg_himol(df_data['product'])
     data_listh3=create_pyg_himol(df_data['R1'])
@@ -386,4 +387,3 @@ def pyg_data_generation(df_data,temp,time,metal,solvent,additive,gm,elsi,label,a
     
     
                                   
-

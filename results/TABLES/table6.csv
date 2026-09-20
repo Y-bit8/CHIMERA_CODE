@@ -1,7 +1,7 @@
-Dataset,Task,Metric,CHIMERA,MFP_MLP,CHIMERA advantage (95% paired t CI),Wins (CHIMERA/MFP_MLP),Wilcoxon p (two-sided),Holm-adjusted p
-Data A,Classification,AUC,0.864 ± 0.020,0.860 ± 0.016,"0.004 [-0.013, 0.020]",7/3,0.625,1.000
-Data A,Regression,R2,0.445 ± 0.069,0.404 ± 0.043,"0.041 [0.012, 0.069]",8/2,0.020,0.117
-Data A,Regression,RMSE,0.728 ± 0.045,0.755 ± 0.040,"0.027 [0.008, 0.047]",8/2,0.020,0.117
-Data B,Classification,AUC,0.857 ± 0.033,0.848 ± 0.034,"0.009 [-0.014, 0.032]",5/5,0.695,1.000
-Data B,Regression,R2,0.650 ± 0.092,0.646 ± 0.056,"0.003 [-0.037, 0.043]",6/4,0.625,1.000
-Data B,Regression,RMSE,1.572 ± 0.219,1.585 ± 0.119,"0.013 [-0.079, 0.105]",6/4,0.625,1.000
+Dataset,Task,Metric,Mean paired difference (CHIMERA advantage)
+Data A,Classification,AUC,0.004
+Data A,Regression,R2,0.041
+Data A,Regression,RMSE,0.027
+Data B,Classification,AUC,0.009
+Data B,Regression,R2,0.003
+Data B,Regression,RMSE,0.013
